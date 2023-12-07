@@ -19,8 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "users")
 public class User implements UserDetails {
-    @Id
 
+    @Id
     private String id;
     private String firstName;
     private String lastName;
