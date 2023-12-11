@@ -2,13 +2,19 @@ package com.amen.platform;
 
 import com.amen.platform.auth.AuthenticationService;
 import com.amen.platform.auth.RegisterRequest;
+import com.amen.platform.user.EmailService;
 import com.amen.platform.user.Role;
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 
 import static com.amen.platform.user.Role.ADMIN;
+import static com.amen.platform.user.Role.MANAGER;
 
 @SpringBootApplication
 public class PlatformApplication {
@@ -27,8 +33,19 @@ public class PlatformApplication {
 					.password("password")
 					.role(ADMIN)
 					.build();
-			System.out.println("Admin token: " + service.register(admin).get);
+			System.out.println("Admin token: " + service.register(admin).getAccessToken());
+
+			var manager = RegisterRequest.builder()
+					.firstName("Manager")
+					.lastName("Manager")
+					.email("manager@gmail.com")
+					.password("password")
+					.role(MANAGER)
+					.build();
+			System.out.println("Manager token: " + service.register(manager).getAccessToken());
 		};
 	}
+
+
 
 }

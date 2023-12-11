@@ -1,5 +1,6 @@
 package com.amen.platform.user;
 
+import com.amen.platform.token.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,10 +8,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -29,9 +30,15 @@ public class User implements UserDetails {
 
     private Role role;
 
+    private List<Token> tokens;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+        if (role != null) {
+            return role.getAuthorities();
+        } else {
+            return Collections.emptyList(); // or return null, depending on your use case
+        }
     }
 
     @Override
@@ -63,4 +70,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
