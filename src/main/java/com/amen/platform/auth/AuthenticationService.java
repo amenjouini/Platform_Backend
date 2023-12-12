@@ -70,12 +70,17 @@ public class AuthenticationService {
 
     public void forgetPassword(AuthenticateRequest request) throws MessagingException {
         var userEmail = repository.findByEmail(request.getEmail());
-        if (userEmail == !null) {
-            var sendHtmlEmail(userEmail,"Forgot your password?");
+        if (userEmail != null) {
+            var emailBody = "Forgot your password?"; // You might want to customize the email body
+            emailService.sendHtmlEmail(userEmail.get().getEmail(), "Forgot Password");
+        } else {
+            // Handle the case where the email is not found
+            // For example, you might want to throw an exception or log a message
         }
-
-
     }
+
+
+
 
     private void revokeAllUserTokens(User user){
         var validUserTokens = tokenRepository.findByUserIdAndExpiredIsFalseAndRevokedIsFalse(user.getId());
