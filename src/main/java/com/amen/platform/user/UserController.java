@@ -24,9 +24,9 @@ public class UserController {
     }
 
     @PostMapping("/sendHtmlEmail")
-    public ResponseEntity<String> sendHtmlEmail() {
+    public ResponseEntity<String> sendHtmlEmail(String to, String subject, String resetToken) {
         try {
-            emailService.sendHtmlEmail("amen.jouini18@gmail.com", "Forgot your password?");
+            emailService.sendHtmlEmail(to, subject,resetToken);
             return ResponseEntity.ok("Email sent successfully");
         } catch (MessagingException e) {
             // Log the exception or handle it according to your application's requirements

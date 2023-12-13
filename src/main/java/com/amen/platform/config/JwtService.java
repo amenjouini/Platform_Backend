@@ -13,7 +13,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 @Service
@@ -66,6 +65,13 @@ public class JwtService {
                 .signWith(getSingInKey(), SignatureAlgorithm.HS256)
                 //.signWith(getRefreshKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    @Value("${application.security.jwt.password-reset.expiration}")
+    private long passwordResetExpiration;
+
+    public String generatePasswordResetToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, passwordResetExpiration);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){

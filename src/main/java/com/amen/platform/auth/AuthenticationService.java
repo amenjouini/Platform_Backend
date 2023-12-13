@@ -12,14 +12,18 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +53,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticateRequest request) {
+    public AuthenticationResponse authenticate(AuthenticateRequest request) throws MessagingException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -68,17 +72,19 @@ public class AuthenticationService {
                 .build();
     }
 
-    public void forgetPassword(AuthenticateRequest request) throws MessagingException {
-        var userEmail = repository.findByEmail(request.getEmail());
-        if (userEmail != null) {
-            var emailBody = "Forgot your password?"; // You might want to customize the email body
-            emailService.sendHtmlEmail(userEmail.get().getEmail(), "Forgot Password");
-        } else {
-            // Handle the case where the email is not found
-            // For example, you might want to throw an exception or log a message
-        }
-    }
+    public AuthenticationResponse forgetPassword(AuthenticateRequest request) throws MessagingException {
+        var user = repository.findByEmail(request.getEmail())
+                .orElseThrow();
+        var resetToken = jwtService.generatePasswordResetToken(user);
 
+        if (user != null)
+            emailService.sendHtmlEmail(request.getEmail(), "Forgot Your Password ?", resetToken);
+        else
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with email " + request.getEmail() + " not found");
+        return AuthenticationResponse.builder()
+                .resetToken(resetToken)
+                .build();
+    }
 
 
 
