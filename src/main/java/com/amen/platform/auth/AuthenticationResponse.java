@@ -17,6 +17,6 @@ public class AuthenticationResponse {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
-    @JsonProperty("reset_token")
+    @JsonProperty("password-reset_token")
     private String resetToken;
 }

@@ -1,10 +1,10 @@
 package com.amen.platform.user;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.Principal;
 
@@ -13,6 +13,7 @@ import java.security.Principal;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final EmailService emailService;
     public void changePassword(
             ChangePasswordRequest request,
             Principal connectedUser
@@ -38,5 +39,41 @@ public class UserService {
         }
     }
 
+    public String forgetPassword(String email) throws MessagingException {
+        //try {
+            System.out.println("Email received: " + email);
+            repository.findByEmail(String.valueOf(email))
+                    .ifPresent(user -> System.out.println("Found user with email: " + user.getEmail()));
 
+            // If no user is found, throw an exception
+            repository.findByEmail(String.valueOf(email))
+                    .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+
+
+            emailService.sendHtmlEmail(email);
+
+            return "Please check your email to set your new password";
+//        } catch (Exception e) {
+//            throw new RuntimeException("An error occurred while processing the request");
+//        }
+    }
+
+    public String setPassword(String email,
+                              ChangePasswordRequest request) throws MessagingException{
+        //try {
+            var user = repository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+            if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
+                throw new IllegalStateException("New password does not match the confirmation password");
+            }
+            // Update password
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            repository.save(user);
+            return "Password set";
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Error changing password", e);
+//        }
+
+    }
 }
+
