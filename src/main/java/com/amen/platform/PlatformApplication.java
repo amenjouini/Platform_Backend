@@ -23,28 +23,28 @@ public class PlatformApplication {
 		SpringApplication.run(PlatformApplication.class, args);
 	}
 
-	@Bean
-	public CommandLineRunner commandLineRunner(AuthenticationService service){
-		return args -> {
-			var admin = RegisterRequest.builder()
-					.firstName("Admin")
-					.lastName("Admin")
-					.email("admin@gmail.com")
-					.password("password")
-					.role(ADMIN)
-					.build();
-			System.out.println("Admin token: " + service.register(admin).getAccessToken());
-
-			var manager = RegisterRequest.builder()
-					.firstName("Manager")
-					.lastName("Manager")
-					.email("manager@gmail.com")
-					.password("password")
-					.role(MANAGER)
-					.build();
-			System.out.println("Manager token: " + service.register(manager).getAccessToken());
-		};
-	}
+//	@Bean
+//	public CommandLineRunner commandLineRunner(AuthenticationService service){
+//		return args -> {
+//			var admin = RegisterRequest.builder()
+//					.firstName("Admin")
+//					.lastName("Admin")
+//					.email("admin@gmail.com")
+//					.password("password")
+//					.role(ADMIN)
+//					.build();
+//			System.out.println("Admin token: " + service.register(admin).getAccessToken());
+//
+//			var manager = RegisterRequest.builder()
+//					.firstName("Manager")
+//					.lastName("Manager")
+//					.email("manager@gmail.com")
+//					.password("password")
+//					.role(MANAGER)
+//					.build();
+//			System.out.println("Manager token: " + service.register(manager).getAccessToken());
+//		};
+//	}
 
 
 

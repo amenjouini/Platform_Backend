@@ -1,6 +1,8 @@
 package com.amen.platform.user;
 
+import com.amen.platform.demo.AdminService;
 import jakarta.mail.MessagingException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,5 +24,12 @@ public class UserController {
         service.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/hello")
+    public String getHello(){
+        return "hey from user controller";
+    }
+
+
 
 }

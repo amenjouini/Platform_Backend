@@ -1,5 +1,6 @@
 package com.amen.platform.auth;
 
+import com.amen.platform.demo.AdminService;
 import com.amen.platform.token.JwtTokenUtil;
 import com.amen.platform.user.ChangePasswordRequest;
 import com.amen.platform.user.User;
@@ -26,6 +27,7 @@ public class AuthenticationController {
     private final AuthenticationService service;
     //public final EmailService emailService;
     public final UserService userService;
+    private final AdminService adminService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -37,6 +39,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.register(request));
     }
 
+    @GetMapping("/getRandomPWD")
+    public String getPWD(){
+        return adminService.generateRandomPassword();
+    }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticateRequest request
