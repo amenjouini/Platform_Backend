@@ -19,9 +19,16 @@ public class JwtTokenUtil {
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
 
-    public String generateToken(String email) {
+//    @Value("${application.security.jwt.refresh-token.expiration}")
+//    private long jwtAdminManagerExpiration;
+
+    public String generateForgetToken(String email) {
         return buildToken(email, jwtExpiration);
     }
+
+//    public String generateAdminManagerToken(String email) {
+//        return buildToken(email, jwtAdminManagerExpiration);
+//    }
 
     public String getEmailFromToken(String token)throws MessagingException {
         //try {

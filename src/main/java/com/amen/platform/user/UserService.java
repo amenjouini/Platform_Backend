@@ -1,7 +1,12 @@
 package com.amen.platform.user;
 
+import com.amen.platform.token.JwtTokenUtil;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +19,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final EmailService emailService;
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
     public void changePassword(
             ChangePasswordRequest request,
             Principal connectedUser
@@ -48,9 +58,17 @@ public class UserService {
             // If no user is found, throw an exception
             repository.findByEmail(String.valueOf(email))
                     .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+            //emailService.sendHtmlEmail(email);
 
+            String token = jwtTokenUtil.generateForgetToken(email);
 
-            emailService.sendHtmlEmail(email);
+            MimeMessage message = mailSender.createMimeMessage();
+            message.setFrom(new InternetAddress("${spring.mail.username}"));
+            message.setRecipients(MimeMessage.RecipientType.TO, email);
+            message.setSubject("Set your password");
+            message.setText("<div> <a href=\"http://localhost:8080/setPassword?token=" + token + "\">Set Password</a></div>");
+
+            mailSender.send(message);
 
             return "Please check your email to set your new password";
 //        } catch (Exception e) {
@@ -60,7 +78,7 @@ public class UserService {
 
     public String setPassword(String email,
                               ChangePasswordRequest request) throws MessagingException{
-        //try {
+        try {
             var user = repository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
             if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
@@ -70,9 +88,9 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             repository.save(user);
             return "Password set";
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Error changing password", e);
-//        }
+        } catch (Exception e) {
+            throw new IllegalStateException("Error changing password", e);
+        }
 
     }
 }

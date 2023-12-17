@@ -1,6 +1,7 @@
 package com.amen.platform.demo;
 
 import com.amen.platform.auth.RegisterRequest;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final ManagementService managementService;
     @GetMapping
 //    @PreAuthorize("hasAuthority('admin:read')")
     public String get(){
@@ -26,7 +28,7 @@ public class AdminController {
 
     @PostMapping("/add-admin")
     public String addAdminOrManager(
-            @RequestBody RegisterRequest request){
+            @RequestBody RegisterRequest request) throws MessagingException {
 
         return adminService.addAdminOrManager(request);
     }
@@ -41,5 +43,10 @@ public class AdminController {
 //    @PreAuthorize("hasAuthority('admin:delete')")
     public String delete(){
         return "DELETE:: admin controller";
+    }
+
+    @DeleteMapping("/delete-user")
+    public String deleteUser(@RequestBody RegisterRequest request){
+        return managementService.deleteUser(request.getEmail());
     }
 }

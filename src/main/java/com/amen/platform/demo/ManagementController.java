@@ -1,6 +1,8 @@
 package com.amen.platform.demo;
 
+import com.amen.platform.auth.AuthenticateRequest;
 import com.amen.platform.auth.RegisterRequest;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,7 @@ public class ManagementController {
     @PostMapping("/add-manager")
     public String addManager(
             @RequestBody RegisterRequest request
-    ){
+    ) throws MessagingException {
         return managementService.addManager(request);
     }
 
@@ -35,5 +37,10 @@ public class ManagementController {
     @DeleteMapping
     public String delete(){
         return "DELETE:: management controller";
+    }
+
+    @DeleteMapping("/delete-user")
+    public String deleteUser(@RequestBody RegisterRequest request){
+        return managementService.deleteUser(request.getEmail());
     }
 }

@@ -19,7 +19,7 @@ public class EmailService {
     private JwtTokenUtil jwtTokenUtil;
 
     public void sendHtmlEmail(String to) throws MessagingException {
-        String token = jwtTokenUtil.generateToken(to);
+        String token = jwtTokenUtil.generateForgetToken(to);
 
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom(new InternetAddress("${spring.mail.username}"));

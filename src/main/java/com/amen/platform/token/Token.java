@@ -19,13 +19,9 @@ public class Token {
     @Id
     private String id;
     private String token;
-
     private TokenType tokenType;
-
     private boolean expired;
-
     private boolean revoked;
-
     @DBRef
     private User user;
 
