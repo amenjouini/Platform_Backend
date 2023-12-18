@@ -5,6 +5,7 @@ import com.amen.platform.token.Token;
 import com.amen.platform.token.TokenRepository;
 import com.amen.platform.token.TokenType;
 import com.amen.platform.user.EmailService;
+import com.amen.platform.user.Role;
 import com.amen.platform.user.User;
 import com.amen.platform.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +40,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.USER)
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

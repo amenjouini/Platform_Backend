@@ -15,6 +15,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ManagementService {
@@ -62,4 +65,18 @@ public class ManagementService {
             return "User not found";
         }
     }
+
+    public String getAllUsers() {
+        return repository.findAll().toString();
+    }
+
+    public String getUserById(String id) {
+        Optional<User> userOptional = repository.findById(id);
+
+        return userOptional
+                .map(User::toString)
+                .orElse("User not found");
+    }
+
+
 }

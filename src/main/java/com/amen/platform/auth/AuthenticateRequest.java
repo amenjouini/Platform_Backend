@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticateRequest {
-    public String email; //kenet private
+    private String email; //kenet private
     String password;
     //public boolean forgetPassword = true; // Default value is false //kenet private
 }

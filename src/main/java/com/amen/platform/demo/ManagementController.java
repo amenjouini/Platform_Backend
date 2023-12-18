@@ -17,6 +17,16 @@ public class ManagementController {
         return "GET:: management controller";
     }
 
+    @GetMapping("/get-all-users")
+    public String getAllUsers(){
+        return managementService.getAllUsers();
+    }
+
+    @GetMapping("/get-user-byId")
+    public String getUserById(@RequestParam String id){
+        return managementService.getUserById(id);
+    }
+
     @PostMapping
     public String post(){
         return "POST:: management controller";
