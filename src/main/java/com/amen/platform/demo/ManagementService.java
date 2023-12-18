@@ -66,17 +66,21 @@ public class ManagementService {
         }
     }
 
-    public String getAllUsers() {
-        return repository.findAll().toString();
+    public String updateUser() {
+        return "";
     }
 
-    public String getUserById(String id) {
-        Optional<User> userOptional = repository.findById(id);
+//    public String getAllUsers() {
+//        return repository.findAll().toString();
+//    }
 
-        return userOptional
-                .map(User::toString)
-                .orElse("User not found");
-    }
+//    public String getUserById(String id) {
+//        Optional<User> userOptional = repository.findById(id);
+//
+//        return userOptional
+//                .map(User::toString)
+//                .orElse("User not found");
+//    }
 
 
 }

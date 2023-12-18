@@ -91,7 +91,7 @@ public class UserService {
         } catch (Exception e) {
             throw new IllegalStateException("Error changing password", e);
         }
-
     }
+
 }
 
