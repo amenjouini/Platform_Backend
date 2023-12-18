@@ -6,12 +6,14 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -93,5 +95,33 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<String> updateProfil(Principal connectedUser, User updatedUser) {
+        // Find the user by ID
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        Optional<User> optionalUser = repository.findById(user.getId());
+
+        if (optionalUser.isPresent()) {
+            User existingUser = optionalUser.get();
+
+            // Update the user properties
+            existingUser.setFirstName(updatedUser.getFirstName());
+            existingUser.setLastName(updatedUser.getLastName());
+            existingUser.setEmail(updatedUser.getEmail());
+
+            // Save the updated user
+            repository.save(existingUser);
+
+            return ResponseEntity.ok("User profile updated successfully");
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
+    public User getProfil(Principal connectedUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Optional<User> userOptional = repository.findById(user.getId());
+        return userOptional.orElse(null);
+    }
 }
 

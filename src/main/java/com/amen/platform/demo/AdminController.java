@@ -1,10 +1,18 @@
 package com.amen.platform.demo;
 
 import com.amen.platform.auth.RegisterRequest;
+import com.amen.platform.user.User;
+import com.amen.platform.user.UserRepository;
+import com.amen.platform.user.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -14,10 +22,36 @@ public class AdminController {
 
     private final AdminService adminService;
     private final ManagementService managementService;
+    private final UserService service;
+    private final UserRepository repository;
+
     @GetMapping
 //    @PreAuthorize("hasAuthority('admin:read')")
     public String get(){
         return "GET:: admin controller";
+    }
+
+    @GetMapping("/get-profil")
+    @ResponseBody
+    public User getProfil(
+            Principal connectedUser
+    ) {
+        return service.getProfil(connectedUser);
+    }
+
+    @GetMapping("/get-all-users")
+    @ResponseBody //naheha ken saret prob
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> userList = repository.findAll();
+        return ResponseEntity.ok(userList);
+    }
+
+    @GetMapping("/get-user-byId")
+//    @ResponseBody
+    public User getUserById(@RequestParam String id){
+        Optional<User> userOptional = repository.findById(id);
+
+        return userOptional.orElse(null);
     }
 
     @PostMapping
@@ -33,10 +67,22 @@ public class AdminController {
         return adminService.addAdminOrManager(request);
     }
 
+    @PostMapping("/add-manager")
+    public String addManager(
+            @RequestBody RegisterRequest request
+    ) throws MessagingException {
+        return managementService.addManager(request);
+    }
+
     @PutMapping
 //    @PreAuthorize("hasAuthority('admin:update')")
     public String put(){
         return "PUT:: admin controller";
+    }
+
+    @PutMapping("/update-profil")
+    public ResponseEntity<String> updateProfil(Principal connectedUser, @RequestBody User updatedUser) {
+        return service.updateProfil(connectedUser,updatedUser);
     }
 
     @DeleteMapping

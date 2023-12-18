@@ -4,11 +4,13 @@ import com.amen.platform.auth.AuthenticateRequest;
 import com.amen.platform.auth.RegisterRequest;
 import com.amen.platform.user.User;
 import com.amen.platform.user.UserRepository;
+import com.amen.platform.user.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +21,18 @@ public class ManagementController {
 
     private final ManagementService managementService;
     private final UserRepository repository;
+    private final UserService service;
     @GetMapping
     public String get(){
         return "GET:: management controller";
+    }
+
+    @GetMapping("/get-profil")
+    @ResponseBody
+    public User getProfil(
+            Principal connectedUser
+    ) {
+        return service.getProfil(connectedUser);
     }
 
     @GetMapping("/get-all-users")
@@ -32,7 +43,7 @@ public class ManagementController {
     }
 
     @GetMapping("/get-user-byId")
-    @ResponseBody
+//    @ResponseBody
     public User getUserById(@RequestParam String id){
         Optional<User> userOptional = repository.findById(id);
 
@@ -56,9 +67,9 @@ public class ManagementController {
         return "PUT:: management controller";
     }
 
-    @PutMapping("/update-user")
-    public String updateUser(){
-        return managementService.updateUser();
+    @PutMapping("/update-profil")
+    public ResponseEntity<String> updateProfil(Principal connectedUser, @RequestBody User updatedUser) {
+        return service.updateProfil(connectedUser,updatedUser);
     }
 
     @DeleteMapping

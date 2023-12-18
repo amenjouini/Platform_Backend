@@ -66,9 +66,6 @@ public class ManagementService {
         }
     }
 
-    public String updateUser() {
-        return "";
-    }
 
 //    public String getAllUsers() {
 //        return repository.findAll().toString();
