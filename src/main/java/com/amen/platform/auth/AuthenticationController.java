@@ -80,4 +80,11 @@ public class AuthenticationController {
          service.refreshToken(request, response);
     }
 
+    @GetMapping("/hello")
+    public String getHello(){
+        return "hey from user controller";
+    }
+
+
+
 }

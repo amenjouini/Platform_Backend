@@ -81,6 +81,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>platform</finalName>
 	</build>
 
 </project>
