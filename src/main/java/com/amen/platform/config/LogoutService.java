@@ -1,6 +1,7 @@
 package com.amen.platform.config;
 
 import com.amen.platform.token.TokenRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,13 @@ public class LogoutService implements LogoutHandler {
             storedToken.setExpired(true);
             storedToken.setRevoked(true);
             tokenRepository.save(storedToken);
+            tokenRepository.delete(storedToken);
+            // Delete the "authToken" cookie
+            Cookie authTokenCookie = new Cookie("authToken", null);
+            authTokenCookie.setMaxAge(0);
+            authTokenCookie.setHttpOnly(true);
+            authTokenCookie.setPath("/"); // Set the cookie path to match where it was set
+            response.addCookie(authTokenCookie);
         }
     }
 }

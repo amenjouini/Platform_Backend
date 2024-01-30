@@ -23,8 +23,9 @@ public class User implements UserDetails {
 
     @Id
     private String id;
-    private String firstName;
-    private String lastName;
+    private String username;
+    private String firstname;
+    private String lastname;
     private String email;
     private String password;
 
@@ -48,6 +49,10 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
         return email;
     }
 
@@ -75,8 +80,8 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                "firstName=" + firstName +
-                "lastName" + lastName +
+                "firstName=" + firstname +
+                "lastName" + lastname +
                 "email" + email +
                 "password" + password +
                 '}';

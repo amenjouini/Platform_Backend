@@ -1,5 +1,6 @@
 package com.amen.platform.auth;
 
+import com.amen.platform.config.LogoutService;
 import com.amen.platform.demo.AdminService;
 import com.amen.platform.token.JwtTokenUtil;
 import com.amen.platform.user.ChangePasswordRequest;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,9 +28,10 @@ public class AuthenticationController {
     private User user;
     private final UserRepository repository;
     private final AuthenticationService service;
-    //public final EmailService emailService;
     public final UserService userService;
     private final AdminService adminService;
+    private final LogoutService logoutService;
+
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -46,6 +50,7 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticateRequest request
+
     ) throws MessagingException
     {
         return ResponseEntity.ok(service.authenticate(request));
@@ -80,11 +85,12 @@ public class AuthenticationController {
          service.refreshToken(request, response);
     }
 
+
+
     @GetMapping("/hello")
     public String getHello(){
         return "hey from user controller";
     }
-
 
 
 }

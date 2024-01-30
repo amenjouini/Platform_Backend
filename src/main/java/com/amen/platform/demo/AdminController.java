@@ -6,6 +6,8 @@ import com.amen.platform.user.UserRepository;
 import com.amen.platform.user.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +26,26 @@ public class AdminController {
     private final ManagementService managementService;
     private final UserService service;
     private final UserRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-    @GetMapping
+    @GetMapping("/admin")
 //    @PreAuthorize("hasAuthority('admin:read')")
-    public String get(){
-        return "GET:: admin controller";
+    public String get() throws MessagingException{
+
+        try {
+            // Your logic here
+            simulateMessagingException();
+            return "GET:: admin controller";
+        } catch (MessagingException e) {
+            // Log the exception using SLF4J
+            logger.error("An error occurred while processing the request", e);
+
+            // You can return a custom error message or handle it in a way that suits your application
+            return "An error occurred while processing the request";
+        }
+    }
+    private void simulateMessagingException() throws MessagingException {
+        throw new MessagingException("Simulated MessagingException");
     }
 
     @GetMapping("/get-profil")
@@ -62,7 +79,7 @@ public class AdminController {
 
     @PostMapping("/add-admin")
     public String addAdminOrManager(
-            @RequestBody RegisterRequest request) throws MessagingException {
+            @RequestBody RegisterRequest request)  {
 
         return adminService.addAdminOrManager(request);
     }

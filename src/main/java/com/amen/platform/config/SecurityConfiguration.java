@@ -50,7 +50,7 @@ public class SecurityConfiguration {
 
                 .requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())
 
-                .requestMatchers(GET, "/api/v1/admin/**").hasAuthority(ADMIN_READ.name())
+                .requestMatchers(GET, "/api/v1/admin/**").hasAuthority(ADMIN_READ.getPermission())
                 .requestMatchers(POST, "/api/v1/admin/**").hasAuthority(ADMIN_CREATE.name())
                 .requestMatchers(PUT, "/api/v1/admin/**").hasAuthority(ADMIN_UPDATE.name())
                 .requestMatchers(DELETE, "/api/v1/admin/**").hasAuthority(ADMIN_DELETE.name())

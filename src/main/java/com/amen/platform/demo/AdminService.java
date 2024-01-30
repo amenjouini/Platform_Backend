@@ -47,22 +47,33 @@ public class AdminService {
 
         return randomPassword.toString();
     }
-    public String addAdminOrManager(RegisterRequest request) throws MessagingException {
-        var generatedPWD = generateRandomPassword();
-        var user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(generatedPWD))
-                .role(request.getRole())
-                .build();
-        repository.save(user);
+    public String addAdminOrManager(RegisterRequest request)  {
+        try {
+            String generatedPWD = generateRandomPassword();
+            User user = User.builder()
+                    .username(request.getUsername())
+                    .firstname(request.getFirstname())
+                    .lastname(request.getLastname())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(generatedPWD))
+                    .role(request.getRole())
+                    .build();
+            repository.save(user);
 
-        MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress("${spring.mail.username}"));
-        message.setRecipients(MimeMessage.RecipientType.TO, request.getEmail());
-        message.setSubject(request.getRole()+" Login");
-        message.setText("<div> Login using your email and this password: " +request.getEmail()+generatedPWD+ "<a href=\"http://localhost:8080/login" + "\">Login</a></div>");
+            MimeMessage message = mailSender.createMimeMessage();
+            message.setFrom(new InternetAddress("${spring.mail.username}"));
+            message.setRecipients(MimeMessage.RecipientType.TO, request.getEmail());
+            message.setSubject(request.getRole() + " Login");
+            message.setText("<div> Login using your email and this password: " + request.getEmail() + generatedPWD + "<a href=\"http://localhost:8080/login" + "\">Login</a></div>");
 
-        mailSender.send(message);
-        return request.getRole() + " added successfully";
+            mailSender.send(message);
+            return request.getRole() + " added successfully";
+        } catch (Exception e) {
+        // Handle the exception here
+        e.printStackTrace(); // Print the stack trace for debugging
+        return "An error occurred while processing the request";
     }
+
+
+}
 }

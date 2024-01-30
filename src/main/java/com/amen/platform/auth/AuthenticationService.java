@@ -9,20 +9,20 @@ import com.amen.platform.user.Role;
 import com.amen.platform.user.User;
 import com.amen.platform.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.mail.MessagingException;
+import org.springframework.http.ResponseCookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +34,12 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .username(request.getUsername())
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
@@ -65,13 +67,29 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+
+        // Store Refresh Token in Cookie
+       //storeRefreshTokenInCookie(response, refreshToken);
+
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
+    private void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
+        ResponseCookie cookie = ResponseCookie.from("authToken", refreshToken)
+                .domain("localhost")
+                .maxAge(Duration.of(14, ChronoUnit.DAYS)) // Set your desired expiration time
+                .httpOnly(true)
+                .secure(true) // Only sent over HTTPS
+                .path("/")
+                .build();
 
+        // Add the cookie to the response
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
     private void revokeAllUserTokens(User user){
         var validUserTokens = tokenRepository.findByUserIdAndExpiredIsFalseAndRevokedIsFalse(user.getId());
         if (validUserTokens.isEmpty())

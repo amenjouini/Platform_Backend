@@ -105,9 +105,9 @@ public class UserService {
             User existingUser = optionalUser.get();
 
             // Update the user properties
-            existingUser.setFirstName(updatedUser.getFirstName());
-            existingUser.setLastName(updatedUser.getLastName());
-            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setFirstname(updatedUser.getFirstname());
+            existingUser.setLastname(updatedUser.getLastname());
+            existingUser.setEmail(updatedUser.getEmail()); //need to make it more secure
 
             // Save the updated user
             repository.save(existingUser);
