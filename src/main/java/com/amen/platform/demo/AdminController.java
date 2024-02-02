@@ -30,19 +30,12 @@ public class AdminController {
 
     @GetMapping("/admin")
 //    @PreAuthorize("hasAuthority('admin:read')")
-    public String get() throws MessagingException{
+    public String get() {
 
-        try {
-            // Your logic here
-            simulateMessagingException();
+
             return "GET:: admin controller";
-        } catch (MessagingException e) {
-            // Log the exception using SLF4J
-            logger.error("An error occurred while processing the request", e);
 
-            // You can return a custom error message or handle it in a way that suits your application
-            return "An error occurred while processing the request";
-        }
+
     }
     private void simulateMessagingException() throws MessagingException {
         throw new MessagingException("Simulated MessagingException");

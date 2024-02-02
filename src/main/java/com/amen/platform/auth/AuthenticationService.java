@@ -9,6 +9,7 @@ import com.amen.platform.user.Role;
 import com.amen.platform.user.User;
 import com.amen.platform.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,9 +36,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
 
+
+    @Value("${application.security.jwt.expiration}")
+    private long cookieExpiry;
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User.builder()
-                .username(request.getUsername())
+                .nickname(request.getNickname())
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
@@ -54,7 +58,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticateRequest request){
+    public AuthenticationResponse authenticate(AuthenticateRequest request, HttpServletResponse response){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -68,14 +72,19 @@ public class AuthenticationService {
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
 
-        // Store Refresh Token in Cookie
-       //storeRefreshTokenInCookie(response, refreshToken);
-
-
+        ResponseCookie cookie = ResponseCookie.from("accessToken", jwtToken)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(cookieExpiry)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
+
     }
 
     private void storeRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {

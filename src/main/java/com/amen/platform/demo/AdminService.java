@@ -51,7 +51,7 @@ public class AdminService {
         try {
             String generatedPWD = generateRandomPassword();
             User user = User.builder()
-                    .username(request.getUsername())
+                    .nickname(request.getNickname())
                     .firstname(request.getFirstname())
                     .lastname(request.getLastname())
                     .email(request.getEmail())

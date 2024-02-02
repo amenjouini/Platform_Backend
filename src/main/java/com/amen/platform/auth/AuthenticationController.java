@@ -49,13 +49,11 @@ public class AuthenticationController {
     }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticateRequest request
-
-    ) throws MessagingException
+            @RequestBody AuthenticateRequest request, HttpServletResponse response
+    )
     {
-        return ResponseEntity.ok(service.authenticate(request));
+        return ResponseEntity.ok(service.authenticate(request, response));
     }
-
 
     @PostMapping("/forget-password")
     public String forgetPassword(
