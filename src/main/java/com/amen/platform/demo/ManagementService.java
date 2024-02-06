@@ -89,6 +89,25 @@ public class ManagementService {
 
     }
 
+    public String unblockUser(String id){
+        var userOptional = repository.findById(id);
+        System.out.println("id is : "+id);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Set the blocked status and other relevant information
+            user.setBlocked(false);
+
+            repository.save(user);
+
+            return "User unblocked successfully";
+        } else {
+            return "User not found";
+        }
+
+    }
+
 
 //    public String getAllUsers() {
 //        return repository.findAll().toString();

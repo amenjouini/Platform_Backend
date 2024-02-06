@@ -121,6 +121,13 @@ public class AdminController {
     public String blockUser(@RequestParam String id) {
         return managementService.blockUser(id);
     }
+
+    @PutMapping("/unblock-user")
+    public String unblockUser(@RequestParam String id) {
+        return managementService.unblockUser(id);
+    }
+
+
     @DeleteMapping
 //    @PreAuthorize("hasAuthority('admin:delete')")
     public String delete(){
