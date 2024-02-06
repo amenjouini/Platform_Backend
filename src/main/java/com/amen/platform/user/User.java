@@ -6,10 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,15 +26,26 @@ public class User implements UserDetails {
 
     @Id
     private String id;
+
+    @Indexed(unique = true)
     private String nickname;
     private String firstname;
     private String lastname;
+
+    @Indexed(unique = true)
     private String email;
     private String password;
 
     private Role role;
 
     private List<Token> tokens;
+
+    private boolean blocked;
+
+    private Instant blockedTimestamp;
+
+    private Duration blockedDuration;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

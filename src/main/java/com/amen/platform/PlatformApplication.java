@@ -13,11 +13,13 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static com.amen.platform.user.Role.ADMIN;
 import static com.amen.platform.user.Role.MANAGER;
 
 @SpringBootApplication
+@EnableScheduling
 public class PlatformApplication {
 
 	public static void main(String[] args) {
@@ -25,16 +27,20 @@ public class PlatformApplication {
 	}
 
 //	@Bean
-//	public CommandLineRunner commandLineRunner(AuthenticationService service){
+//	public CommandLineRunner commandLineRunner(AuthenticationService service) {
 //		return args -> {
 //			var admin = RegisterRequest.builder()
-//					.firstName("Admin")
-//					.lastName("Admin")
+//					.nickname("Admin")
+//					.firstname("Admin")
+//					.lastname("Admin")
 //					.email("admin@gmail.com")
 //					.password("password")
 //					.role(ADMIN)
 //					.build();
 //			System.out.println("Admin token: " + service.register(admin).getAccessToken());
+//		};
+//	}
+
 //
 //			var manager = RegisterRequest.builder()
 //					.firstName("Manager")

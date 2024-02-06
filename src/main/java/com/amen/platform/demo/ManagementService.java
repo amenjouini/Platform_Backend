@@ -15,6 +15,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,9 +52,9 @@ public class ManagementService {
         return request.getRole() + " added successfully";
     }
 
-    public String deleteUser(String email) {
-        var user = repository.findByEmail(email);
-        System.out.println("email is : "+email);
+    public String deleteUser(String id) {
+        var user = repository.findById(id);
+        System.out.println("id is : "+id);
         if (user.isPresent()) {
             // Step 2: Find and delete associated tokens by user ID
             tokenRepository.deleteByUserId(user.get().getId());
@@ -64,6 +66,27 @@ public class ManagementService {
         } else {
             return "User not found";
         }
+    }
+
+    public String blockUser(String id) {
+        var userOptional = repository.findById(id);
+        System.out.println("id is : "+id);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Set the blocked status and other relevant information
+            user.setBlocked(true);
+            user.setBlockedTimestamp(Instant.now());
+            user.setBlockedDuration(Duration.ofDays(7)); // Example: Block for 7 days
+
+            repository.save(user);
+
+            return "User blocked successfully";
+        } else {
+            return "User not found";
+        }
+
     }
 
 

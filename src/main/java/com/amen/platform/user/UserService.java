@@ -8,24 +8,42 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository repository;
+    @Autowired
+    private UserRepository repository;
     private final EmailService emailService;
     @Autowired
     private JavaMailSender mailSender;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000) // Run every 24 hours
+    public void unlockBlockedUsers() {
+        List<User> blockedUsers = repository.findByBlocked(true);
+        //System.out.println("1 minute has passed");
+        for (User user : blockedUsers) {
+            Instant expirationTime = user.getBlockedTimestamp().plus(user.getBlockedDuration());
+            if (Instant.now().isAfter(expirationTime)) {
+                // Unlock the user
+                user.setBlocked(false);
+                repository.save(user);
+            }
+        }
+    }
     public void changePassword(
             ChangePasswordRequest request,
             Principal connectedUser

@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,18 +51,38 @@ public class AdminController {
         return service.getProfil(connectedUser);
     }
 
+//    @GetMapping("/get-all-users-with-admin")
+//    @ResponseBody //naheha ken saret prob
+//    public ResponseEntity<List<User>> getAllUsers() {
+//        List<User> userList = repository.findAll();
+//        return ResponseEntity.ok(userList);
+//    }
+
     @GetMapping("/get-all-users")
     @ResponseBody //naheha ken saret prob
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> userList = repository.findAll();
+    public ResponseEntity<List<User>> getAllUsers(Principal connectedUser) {
+        var user = getProfil(connectedUser);
+        List<User> userList = repository.findAllByIdNot(user.getId());
         return ResponseEntity.ok(userList);
     }
 
-    @GetMapping("/get-user-byId")
-//    @ResponseBody
-    public User getUserById(@RequestParam String id){
-        Optional<User> userOptional = repository.findById(id);
+//    public List<User> getAllUsersExceptConnectedUser(Principal connectedUser) {
+//        // Extract the username (email) of the connected user
+//        String connectedUsername = connectedUser.getName();
+//
+//        // Use Spring Data JPA to find all users except the connected user
+//        List<User> userList = userRepository.findAllByEmailNot(connectedUsername);
+//
+//        return userList;
+//    }
 
+
+
+    @GetMapping("/get-user-byNickname")
+    @ResponseBody
+    public User getUserByNickname(@RequestParam String nickname) {
+        Optional<User> userOptional = repository.findByNickname(nickname);
+        System.out.println("User nickname: " + nickname);
         return userOptional.orElse(null);
     }
 
@@ -95,6 +117,10 @@ public class AdminController {
         return service.updateProfil(connectedUser,updatedUser);
     }
 
+    @PutMapping("/block-user")
+    public String blockUser(@RequestParam String id) {
+        return managementService.blockUser(id);
+    }
     @DeleteMapping
 //    @PreAuthorize("hasAuthority('admin:delete')")
     public String delete(){
@@ -102,7 +128,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/delete-user")
-    public String deleteUser(@RequestBody RegisterRequest request){
-        return managementService.deleteUser(request.getEmail());
+    public String deleteUser(@RequestParam String id){
+        return managementService.deleteUser(id);
     }
 }
